@@ -67,11 +67,12 @@ class ContactRepositoryImpl : ContactRepository {
         }
     }
 
-    override fun findAll(): List<Contact> {
+    override fun findAll(limit: Int, offset: Int): List<Contact> {
         return transaction(dataSource) {
             ContactTable.leftJoin(PhoneTable, { ContactTable.id }, { PhoneTable.contactId })
                 .slice(PhoneTable.columns + ContactTable.columns)
                 .selectAll()
+                .limit(limit, offset = offset)
                 .groupBy { it[ContactTable.id] }
                 .map { it.value.first().toContact(it.value.toPhoneList()) }
         }.toList()

@@ -4,16 +4,12 @@ import info.marcusvinicius.contacts.domain.Contact
 import info.marcusvinicius.contacts.domain.Phone
 import info.marcusvinicius.contacts.domain.repository.ContactRepository
 import org.amshove.kluent.*
-import org.jetbrains.exposed.sql.not
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.runner.RunWith
 import org.mockito.BDDMockito.given
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.junit.MockitoJUnitRunner
 import java.util.*
-import kotlin.math.exp
 
 class ContactServiceTest {
     private lateinit var contactService: ContactService
@@ -41,16 +37,24 @@ class ContactServiceTest {
             )
         )
 
-        given(contactRepository.findAll()).willReturn(expected)
+        given(contactRepository.findAll(20, 0)).willReturn(expected)
 
         // Act
-        val allContacts = contactService.findAll()
+        val allContacts = contactService.findAll(20, 0)
 
         // Assert
         allContacts.size `should be` expected.size
         expected.forEach {
             allContacts `should contain` it
         }
+    }
+
+    @Test
+    fun `insert a contact`() {
+        // Arrange
+
+        // Act
+        contactService.create(createContact(firstName = "Jane"))
     }
 
     private fun createContact(
@@ -64,7 +68,7 @@ class ContactServiceTest {
         company: String? = null,
         jobTitle: String? = null,
         title: String? = null,
-        phones: List<Phone>
+        phones: List<Phone> = listOf()
     ): Contact {
         return Contact(
             id, firstName, middleName, lastName, email, website, birthday, company, jobTitle, title, phones

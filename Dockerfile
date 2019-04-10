@@ -12,4 +12,4 @@ FROM openjdk:8-jre-alpine
 COPY --from=BUILD /src/build/libs/contacts.jar /bin/contacts/app.jar
 WORKDIR /bin/contacts
 
-CMD ["java","-jar","app.jar"]
+CMD ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7001","-jar","app.jar"]
